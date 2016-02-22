@@ -1,0 +1,6 @@
+.vs/
+packages/
+Components/
+bin/
+obj/
+*.pfx
