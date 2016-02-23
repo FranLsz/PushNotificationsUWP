@@ -13,7 +13,10 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using PushUniversalWindows.Model;
+using PushUniversalWindows.Pages;
 
 namespace PushUniversalWindows
 {
@@ -30,6 +33,7 @@ namespace PushUniversalWindows
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
         }
 
         /// <summary>
@@ -43,7 +47,7 @@ namespace PushUniversalWindows
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
-                this.DebugSettings.EnableFrameRateCounter = true;
+                this.DebugSettings.EnableFrameRateCounter = false;
             }
 #endif
 
@@ -100,6 +104,37 @@ namespace PushUniversalWindows
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+
+        protected override void OnActivated(IActivatedEventArgs args)
+        {
+            // TODO: Initialize root frame just like in OnLaunched
+
+            // Handle toast activation
+            if (args.Kind == ActivationKind.ToastNotification)
+            {
+                var toastArgs = args as ToastNotificationActivatedEventArgs;
+
+                // Get arguments corresponding to this activation;
+                // When tapping the body of the toast caused this activation, the app receives the value of “launch” property of ;
+                // When the activation is caused by using tapping on an action inside the toast, the app receives the value of “arguments” property of ; 
+
+                if (toastArgs.Argument == "check")
+                {
+                    Frame rootFrame = Window.Current.Content as Frame;
+                    rootFrame.Navigate(typeof(DetailsPage), new Smartphone() { Modelo = "asd", Precio = 23, Fabricante = "asd", Id = "asd" });
+
+                    if (rootFrame.BackStack.Count == 0)
+                        rootFrame.BackStack.Add(new PageStackEntry(typeof(MainPage), null, null));
+
+                    Window.Current.Activate();
+                }
+
+                // Navigate accordingly
+            }
+
+            // TODO: Handle other types of activation
         }
     }
 }
