@@ -33,10 +33,10 @@ namespace PushUniversalWindows
 
         private async void button_Click(object sender, RoutedEventArgs e)
         {
-             MobileServiceClient MobileService = new MobileServiceClient(
-                  "https://franpush.azure-mobile.net/",
-                  "EfJxzclqkyQUQqdanbivlLhkqXJPqX65"
-            );
+            MobileServiceClient MobileService = new MobileServiceClient(
+                 "https://franpush.azure-mobile.net/",
+                 "EfJxzclqkyQUQqdanbivlLhkqXJPqX65"
+           );
 
             var channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
 
@@ -44,8 +44,9 @@ namespace PushUniversalWindows
 
             var result = await hub.RegisterNativeAsync(channel.Uri);
 
-            TodoItem item = new TodoItem { Text = "Awesome item", Complete = false };
-            await MobileService.GetTable<TodoItem>().InsertAsync(item);
+            Smartphone item = new Smartphone() { Modelo = "LG G4", Fabricante = "LG", Precio = (decimal)350.23 };
+            var table = MobileService.GetTable<Smartphone>();
+            await table.InsertAsync(item);
 
             var dialog = new Windows.UI.Popups.MessageDialog(item.Id);
             await dialog.ShowAsync();
