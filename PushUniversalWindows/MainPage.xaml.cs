@@ -22,7 +22,7 @@ using Microsoft.WindowsAzure.MobileServices;
 using PushUniversalWindows.Model;
 using PushUniversalWindows.Pages;
 using PushUniversalWindows.Servicios;
-using PushUniversalWindows.Utils;
+using PushUniversalWindows.Utiles;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -43,7 +43,7 @@ namespace PushUniversalWindows
 
             Loaded += OnLoaded;
 
-            List<Smartphone> lista = Task.Run(() => new DatosServicio().GetSmartphones()).Result;
+            List<Smartphone> lista = Task.Run(() => new ServicioDatos().GetSmartphones()).Result;
 
             Smartphones = new ObservableCollection<Smartphone>(lista);
             MasterListView.ItemsSource = Smartphones;
@@ -259,10 +259,10 @@ namespace PushUniversalWindows
                 {
                     Modelo = modeloBox.Text,
                     Fabricante = fabricanteBox.Text,
-                    Precio = Convert.ToDecimal(precioBox.Text)
+                    Precio = Convert.ToDouble(precioBox.Text)
                 };
 
-                var mobileService = new DatosServicio();
+                var mobileService = new ServicioDatos();
                 var s = Task.Run(() => mobileService.AddSmartphone(nuevo)).Result;
 
                 Smartphones.Add(s);
@@ -274,7 +274,7 @@ namespace PushUniversalWindows
         {
             if (smartphoneSeleccionado != null)
             {
-                var mobileService = new DatosServicio();
+                var mobileService = new ServicioDatos();
                 Smartphones.Remove(smartphoneSeleccionado);
                 mobileService.DeleteSmartphone(smartphoneSeleccionado);
 
@@ -295,7 +295,7 @@ namespace PushUniversalWindows
             if (MasterListView.SelectedIndex != -1)
             {
                 List<Smartphone> selectedItems = new List<Smartphone>();
-                var mobileService = new DatosServicio();
+                var mobileService = new ServicioDatos();
                 foreach (Smartphone sm in MasterListView.SelectedItems)
                 {
                     selectedItems.Add(sm);
