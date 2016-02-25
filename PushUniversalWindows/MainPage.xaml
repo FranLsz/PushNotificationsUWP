@@ -187,7 +187,8 @@
                   ShowsScrollingPlaceholders="False"
                   ItemTemplate="{StaticResource ContactListViewTemplate }"
                   ItemClick="OnItemClick"
-                  Grid.Row="1">
+                  Grid.Row="1"
+                  ItemsSource="{x:Bind Smartphones}">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />

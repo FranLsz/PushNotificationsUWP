@@ -24,8 +24,6 @@ using PushUniversalWindows.Pages;
 using PushUniversalWindows.Servicios;
 using PushUniversalWindows.Utiles;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
-
 namespace PushUniversalWindows
 {
     /// <summary>
@@ -40,14 +38,20 @@ namespace PushUniversalWindows
         public MainPage()
         {
             InitializeComponent();
-
             Loaded += OnLoaded;
 
-            List<Smartphone> lista = Task.Run(() => new ServicioDatos().GetSmartphones()).Result;
+            // tags
+            var tags = new List<string>() { "NuevoSmartphone" };
 
+            var servicioNotificacion = new ServicioNotificationHub(
+                Constantes.NotificationHubPath,
+                Constantes.ConnectionString,
+                tags);
+
+            Task.Run(() => servicioNotificacion.Registrar());
+
+            var lista = Task.Run(() => new ServicioDatos().GetSmartphones()).Result;
             Smartphones = new ObservableCollection<Smartphone>(lista);
-            MasterListView.ItemsSource = Smartphones;
-
         }
 
 
@@ -74,16 +78,12 @@ namespace PushUniversalWindows
                 smartphoneSeleccionado = Smartphones[0];
                 MasterListView.SelectedIndex = 0;
             }
-            // If the app starts in narrow mode - showing only the Master listView - 
-            // it is necessary to set the commands and the selection mode.
             if (PageSizeStatesGroup.CurrentState == NarrowState)
             {
                 VisualStateManager.GoToState(this, MasterState.Name, true);
             }
             else if (PageSizeStatesGroup.CurrentState == WideState)
             {
-                // In this case, the app starts is wide mode, Master/Details view, 
-                // so it is necessary to set the commands and the selection mode.
                 VisualStateManager.GoToState(this, MasterDetailsState.Name, true);
                 MasterListView.SelectionMode = ListViewSelectionMode.Extended;
                 MasterListView.SelectedItem = smartphoneSeleccionado;
@@ -94,25 +94,15 @@ namespace PushUniversalWindows
             }
         }
 
-        private async void button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
 
         private void OnItemClick(object sender, ItemClickEventArgs e)
         {
-            // The clicked item it is the new selected contact
             smartphoneSeleccionado = e.ClickedItem as Smartphone;
             if (PageSizeStatesGroup.CurrentState == NarrowState)
             {
-                // Go to the details page and display the item 
                 Frame.Navigate(typeof(DetailsPage), smartphoneSeleccionado, new DrillInNavigationTransitionInfo());
             }
-            //else
-            {
-                // Play a refresh animation when the user switches detail items.
-                //EnableContentTransitions();
-            }
+
         }
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -124,28 +114,17 @@ namespace PushUniversalWindows
                     smartphoneSeleccionado = MasterListView.SelectedItem as Smartphone;
                     EnableContentTransitions();
                 }
-                // Entering in Extended selection
                 else if (MasterListView.SelectedItems.Count > 1
                      && MasterDetailsStatesGroup.CurrentState == MasterDetailsState)
                 {
                     VisualStateManager.GoToState(this, ExtendedSelectionState.Name, true);
                 }
             }
-            // Exiting Extended selection
             if (MasterDetailsStatesGroup.CurrentState == ExtendedSelectionState &&
                 MasterListView.SelectedItems.Count == 1)
             {
                 VisualStateManager.GoToState(this, MasterDetailsState.Name, true);
             }
-        }
-        private void ShowSliptView(object sender, RoutedEventArgs e)
-        {
-            // Clearing the cache
-            int cacheSize = ((Frame)Parent).CacheSize;
-            ((Frame)Parent).CacheSize = 0;
-            ((Frame)Parent).CacheSize = cacheSize;
-
-            // MySamplesPane.SamplesSplitView.IsPaneOpen = !MySamplesPane.SamplesSplitView.IsPaneOpen;
         }
 
         private void SelectItems(object sender, RoutedEventArgs e)
@@ -165,28 +144,17 @@ namespace PushUniversalWindows
 
         private async void AddItem(object sender, RoutedEventArgs e)
         {
-            var channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
-            var hub = new NotificationHub(Constantes.NotificationHubPath, Constantes.ConnectionString);
-            var result = await hub.RegisterNativeAsync(channel.Uri);
+
 
             var dialogo = GenerarDialogo();
 
             // Lanzar dialogo
             await dialogo.ShowAsync();
 
-
-
-
-
-
-
-            // Select this item in case that the list is empty
             if (MasterListView.SelectedIndex == -1)
             {
                 MasterListView.SelectedIndex = 0;
                 smartphoneSeleccionado = MasterListView.SelectedItem as Smartphone;
-                // Details view is collapsed, in case there is not items.
-                // You should show it just in case. 
                 DetailContentPresenter.Visibility = Visibility.Visible;
             }
         }

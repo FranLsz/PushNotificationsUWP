@@ -105,7 +105,9 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Servicios\IServicioDatos.cs" />
+    <Compile Include="Servicios\IServicioNotificationHub.cs" />
     <Compile Include="Servicios\ServicioDatos.cs" />
+    <Compile Include="Servicios\ServicioNotificationHub.cs" />
     <Compile Include="Utiles\Constantes.cs" />
   </ItemGroup>
   <ItemGroup>
